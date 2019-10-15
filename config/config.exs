@@ -12,7 +12,8 @@ config :nanocrawler, NanocrawlerWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "dAWUeayvOlOtbz8iJ4eO2VTIWAwCXqK/j3uTsTlNIdaGpGN5RtWS0L/8DvHPrmuW",
   render_errors: [view: NanocrawlerWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Nanocrawler.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Nanocrawler.PubSub, adapter: Phoenix.PubSub.PG2],
+  nano: [rpc_host: "http://10.0.1.78:55000"]
 
 # Configures Elixir's Logger
 config :logger, :console,
