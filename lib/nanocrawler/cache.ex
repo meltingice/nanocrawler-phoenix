@@ -3,10 +3,10 @@ defmodule Nanocrawler.Cache do
 
   def fetch(key, expire, func) do
     case command(["GET", transform_key(key)]) do
-      # Key cached
-      {:ok, data} when not is_nil(data) -> {:ok, Jason.decode!(data)}
       # Key not stored
       {:ok, nil} -> store(key, expire, func.())
+      # Key cached
+      {:ok, data} -> {:ok, Jason.decode!(data)}
       # Fetch failed, silently continue
       {:error, _} -> {:ok, func.()}
     end
