@@ -39,7 +39,8 @@ defmodule Nanocrawler.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:react_phoenix, "~> 1.0.0"}
+      {:react_phoenix, "~> 1.0.0"},
+      {:redix, "~> 0.10.2"}
     ]
   end
 end

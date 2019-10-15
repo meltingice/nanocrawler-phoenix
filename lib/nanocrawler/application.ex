@@ -9,7 +9,8 @@ defmodule Nanocrawler.Application do
     # List all child processes to be supervised
     children = [
       # Start the endpoint when the application starts
-      NanocrawlerWeb.Endpoint
+      NanocrawlerWeb.Endpoint,
+      Nanocrawler.Redix
       # Starts a worker by calling: Nanocrawler.Worker.start_link(arg)
       # {Nanocrawler.Worker, arg},
     ]
