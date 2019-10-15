@@ -11,7 +11,7 @@ defmodule NanocrawlerWeb.Api.V2.NodeController do
 
     case rpc_data do
       {:ok, data} -> json(conn, data)
-      {:error, data} -> conn |> put_status(500) |> json(data)
+      {:error, data} -> conn |> put_status(500) |> json(error: data)
     end
   end
 end
