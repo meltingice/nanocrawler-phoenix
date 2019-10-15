@@ -24,7 +24,13 @@ defmodule NanocrawlerWeb.Router do
     pipe_through :api
 
     scope "/v2" do
-      get "/accounts/:account", Api.V2.AccountsController, :show
+      scope "/accounts" do
+        get "/:account", Api.V2.AccountsController, :show
+      end
+
+      scope "/node" do
+        get "/block_count", Api.V2.NodeController, :block_count
+      end
     end
   end
 end
