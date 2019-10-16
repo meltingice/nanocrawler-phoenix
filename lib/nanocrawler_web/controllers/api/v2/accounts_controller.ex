@@ -3,7 +3,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
   alias NanocrawlerWeb.Helpers.CommonErrors
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache
-  import Nanocrawler.Util, only: [account_is_valid?: 1]
+  import Nanocrawler.Util, only: [account_is_valid?: 1, timestampForBlock: 1]
 
   def show(conn, %{"account" => account}) do
     cond do
@@ -90,8 +90,13 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
           {:ok, %{"history" => ""}} ->
             conn |> put_status(:not_found) |> json(CommonErrors.account_not_found())
 
-          {:ok, data} ->
-            json(conn, data)
+          {:ok, %{"history" => history}} ->
+            history =
+              Enum.map(history, fn entry ->
+                Map.merge(entry, %{"timestamp" => timestampForBlock(entry["hash"])})
+              end)
+
+            json(conn, %{"history" => history})
 
           {:error, "Bad account number" = data} ->
             conn |> put_status(:bad_request) |> json(%{error: data})
