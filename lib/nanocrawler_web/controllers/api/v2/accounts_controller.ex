@@ -72,4 +72,36 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
         conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
     end
   end
+
+  def history(conn, %{"account" => account} = params) do
+    cond do
+      account_is_valid?(account) ->
+        rpc_data =
+          fetch("v2/account/#{account}/history/#{params["head"] || ""}", 10, fn ->
+            NanoAPI.rpc("account_history", %{
+              account: account,
+              count: 50,
+              raw: true,
+              head: params["head"]
+            })
+          end)
+
+        case rpc_data do
+          {:ok, %{"history" => ""}} ->
+            conn |> put_status(:not_found) |> json(CommonErrors.account_not_found())
+
+          {:ok, data} ->
+            json(conn, data)
+
+          {:error, "Bad account number" = data} ->
+            conn |> put_status(:bad_request) |> json(%{error: data})
+
+          {:error, msg} ->
+            conn |> put_status(500) |> json(%{error: msg})
+        end
+
+      true ->
+        conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
+    end
+  end
 end
