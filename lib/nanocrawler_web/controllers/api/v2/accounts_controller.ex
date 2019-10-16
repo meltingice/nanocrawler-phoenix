@@ -1,5 +1,6 @@
 defmodule NanocrawlerWeb.Api.V2.AccountsController do
   use NanocrawlerWeb, :controller
+  alias NanocrawlerWeb.Helpers.CommonErrors
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache
   import Nanocrawler.Util, only: [account_is_valid?: 1]
@@ -32,7 +33,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
         end
 
       true ->
-        conn |> put_status(:bad_request) |> json(%{error: "Account is invalid"})
+        conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
     end
   end
 
@@ -50,7 +51,25 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
         end
 
       true ->
-        conn |> put_status(:bad_request) |> json(%{error: "Account is invalid"})
+        conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
+    end
+  end
+
+  def delegators(conn, %{"account" => account}) do
+    cond do
+      account_is_valid?(account) ->
+        rpc_data =
+          fetch("v2/account/#{account}/delegators", 300, fn ->
+            NanoAPI.rpc("delegators", %{account: account})
+          end)
+
+        case rpc_data do
+          {:ok, data} -> json(conn, data)
+          {:error, msg} -> conn |> put_status(500) |> json(%{error: msg})
+        end
+
+      true ->
+        conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
     end
   end
 end
