@@ -109,4 +109,68 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
         conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
     end
   end
+
+  def pending(conn, %{"account" => account}) do
+    cond do
+      account_is_valid?(account) ->
+        data =
+          fetch("v2/account/#{account}/pending", 10, fn ->
+            rpc_data =
+              NanoAPI.rpc("accounts_pending", %{
+                accounts: [account],
+                source: true,
+                # 0.000001
+                threshold: "1000000000000000000000000",
+                sorting: true
+              })
+
+            case rpc_data do
+              {:ok, %{"blocks" => accounts}} ->
+                # Since we're really only fetching 1 account, we can just grab the only entry in the Map.
+                all_blocks = accounts[Map.keys(accounts) |> hd]
+
+                # Because some accounts can have a ton of pending transactions, we're only interested in
+                # the first 20.
+                blocks =
+                  all_blocks
+                  |> Map.to_list()
+                  |> Enum.slice(0, 20)
+                  |> Enum.into(%{})
+                  |> Enum.map(fn {hash, block} ->
+                    %{
+                      type: "pending",
+                      amount: block["amount"],
+                      hash: hash,
+                      source: block["source"],
+                      timestamp: timestampForBlock(hash)
+                    }
+                  end)
+
+                case NanoAPI.rpc("account_balance", %{account: account}) do
+                  {:ok, %{"pending" => pending_balance}} ->
+                    {:ok,
+                     %{
+                       total: map_size(all_blocks),
+                       blocks: blocks,
+                       pendingBalance: pending_balance
+                     }}
+
+                  {:error, msg} ->
+                    {:error, msg}
+                end
+
+              true ->
+                rpc_data
+            end
+          end)
+
+        case data do
+          {:ok, resp} -> json(conn, resp)
+          {:error, msg} -> conn |> put_status(500) |> json(%{error: msg})
+        end
+
+      true ->
+        conn |> put_status(:bad_request) |> json(CommonErrors.account_invalid())
+    end
+  end
 end
