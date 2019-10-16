@@ -20,7 +20,7 @@ defmodule Nanocrawler.NanoAPI do
   end
 
   defp rpc_host do
-    to_charlist(Application.get_env(:nanocrawler, NanocrawlerWeb.Endpoint)[:nano][:rpc_host])
+    to_charlist(Application.get_env(:nanocrawler, :nano)[:rpc_host])
   end
 
   defp process_response(data) do

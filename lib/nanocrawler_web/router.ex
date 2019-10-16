@@ -26,6 +26,7 @@ defmodule NanocrawlerWeb.Router do
     scope "/v2" do
       scope "/accounts" do
         get "/:account", Api.V2.AccountsController, :show
+        get "/:account/weight", Api.V2.AccountsController, :weight
       end
 
       scope "/node" do
