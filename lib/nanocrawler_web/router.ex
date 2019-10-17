@@ -32,6 +32,10 @@ defmodule NanocrawlerWeb.Router do
         get "/:account/pending", Api.V2.AccountsController, :pending
       end
 
+      scope "/blocks" do
+        get "/:hash", Api.V2.BlocksController, :show
+      end
+
       scope "/node" do
         get "/block_count", Api.V2.NodeController, :block_count
       end

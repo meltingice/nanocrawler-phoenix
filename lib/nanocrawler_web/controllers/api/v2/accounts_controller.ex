@@ -3,7 +3,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
   alias NanocrawlerWeb.Helpers.CommonErrors
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache
-  import Nanocrawler.Util, only: [account_is_valid?: 1, timestampForBlock: 1]
+  import Nanocrawler.Util, only: [account_is_valid?: 1, timestamp_for_block: 1]
 
   plug :validate_account
 
@@ -75,7 +75,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
       {:ok, %{"history" => history}} ->
         history =
           Enum.map(history, fn entry ->
-            Map.merge(entry, %{"timestamp" => timestampForBlock(entry["hash"])})
+            Map.merge(entry, %{"timestamp" => timestamp_for_block(entry["hash"])})
           end)
 
         json(conn, %{"history" => history})
@@ -104,23 +104,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
           {:ok, %{"blocks" => accounts}} ->
             # Since we're really only fetching 1 account, we can just grab the only entry in the Map.
             all_blocks = accounts[Map.keys(accounts) |> hd]
-
-            # Because some accounts can have a ton of pending transactions, we're only interested in
-            # the first 20.
-            blocks =
-              all_blocks
-              |> Map.to_list()
-              |> Enum.slice(0, 20)
-              |> Enum.into(%{})
-              |> Enum.map(fn {hash, block} ->
-                %{
-                  type: "pending",
-                  amount: block["amount"],
-                  hash: hash,
-                  source: block["source"],
-                  timestamp: timestampForBlock(hash)
-                }
-              end)
+            blocks = format_pending_blocks(all_blocks)
 
             case NanoAPI.rpc("account_balance", %{account: account}) do
               {:ok, %{"pending" => pending_balance}} ->
@@ -146,7 +130,25 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
     end
   end
 
-  def validate_account(conn, _) do
+  defp format_pending_blocks(all_blocks) do
+    # Because some accounts can have a ton of pending transactions, we're only interested in
+    # the first 20.
+    all_blocks
+    |> Map.to_list()
+    |> Enum.slice(0, 20)
+    |> Enum.into(%{})
+    |> Enum.map(fn {hash, block} ->
+      %{
+        type: "pending",
+        amount: block["amount"],
+        hash: hash,
+        source: block["source"],
+        timestamp: timestamp_for_block(hash)
+      }
+    end)
+  end
+
+  defp validate_account(conn, _) do
     cond do
       account_is_valid?(conn.params["account"]) ->
         conn
