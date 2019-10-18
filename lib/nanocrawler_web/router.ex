@@ -33,6 +33,10 @@ defmodule NanocrawlerWeb.Router do
       scope "/node" do
         get "/block_count", NodeController, :block_count
       end
+
+      scope "/representatives" do
+        get "/online", RepresentativesController, :online
+      end
     end
   end
 
