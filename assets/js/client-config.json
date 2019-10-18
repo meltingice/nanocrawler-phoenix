@@ -1,6 +1,6 @@
 {
   "server": "http://localhost:4000/api",
-  "websocketServer": "ws.nanocrawler.cc",
+  "websocketServer": "beta.ws.nanocrawler.cc",
   "donationAddress": "xrb_3xemzomy4atzmq5u55mzzixqw9zxykyeyeiqia7rb1xy1saufpr8wzder1xh",
   "currency": {
     "name": "Nano",

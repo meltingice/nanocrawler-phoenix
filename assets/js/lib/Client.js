@@ -74,7 +74,7 @@ class Client {
 
   async block(hash) {
     const resp = await this.fetch(`v2/blocks/${hash}`);
-    return await resp.json();
+    return (await resp.json()).block;
   }
 
   async delegators(account) {

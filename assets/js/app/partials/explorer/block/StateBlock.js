@@ -16,7 +16,7 @@ export default class StateBlock extends React.Component {
       <div>
         <h4 className="mb-0">
           <TranslatedMessage id="block.state.subtype" />{" "}
-          <small className="text-muted">{block.contents.subtype}</small>
+          <small className="text-muted">{block.subtype}</small>
         </h4>
         <p>
           <small>
@@ -174,7 +174,7 @@ export default class StateBlock extends React.Component {
 
   getStateBlockExtraInfo() {
     const { block } = this.props;
-    switch (block.contents.subtype) {
+    switch (block.subtype) {
       case "open":
       case "receive":
         return (
@@ -225,7 +225,7 @@ export default class StateBlock extends React.Component {
     const { block } = this.props;
     let link, meaning;
 
-    switch (block.contents.subtype) {
+    switch (block.subtype) {
       case "open":
         link = (
           <BlockLink
