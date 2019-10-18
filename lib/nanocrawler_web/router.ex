@@ -14,24 +14,24 @@ defmodule NanocrawlerWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  scope "/api", NanocrawlerWeb do
+  scope "/api", NanocrawlerWeb.Api do
     pipe_through :api
 
-    scope "/v2" do
+    scope "/v2", V2 do
       scope "/accounts" do
-        get "/:account", Api.V2.AccountsController, :show
-        get "/:account/weight", Api.V2.AccountsController, :weight
-        get "/:account/delegators", Api.V2.AccountsController, :delegators
-        get "/:account/history", Api.V2.AccountsController, :history
-        get "/:account/pending", Api.V2.AccountsController, :pending
+        get "/:account", AccountsController, :show
+        get "/:account/weight", AccountsController, :weight
+        get "/:account/delegators", AccountsController, :delegators
+        get "/:account/history", AccountsController, :history
+        get "/:account/pending", AccountsController, :pending
       end
 
       scope "/blocks" do
-        get "/:hash", Api.V2.BlocksController, :show
+        get "/:hash", BlocksController, :show
       end
 
       scope "/node" do
-        get "/block_count", Api.V2.NodeController, :block_count
+        get "/block_count", NodeController, :block_count
       end
     end
   end
