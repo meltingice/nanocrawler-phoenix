@@ -30,6 +30,11 @@ defmodule NanocrawlerWeb.Router do
         get "/:hash", BlocksController, :show
       end
 
+      scope "/network" do
+        get "/active_difficulty", NetworkController, :active_difficulty
+        get "/peers", NetworkController, :peers
+      end
+
       scope "/node" do
         get "/block_count", NodeController, :block_count
       end
