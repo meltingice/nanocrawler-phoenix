@@ -32,6 +32,9 @@ defmodule NanocrawlerWeb.Api.V2.BlocksController do
       {:ok, resp} ->
         json(conn, %{block: resp})
 
+      {:error, "Block not found" = msg} ->
+        conn |> put_status(:not_found) |> json(%{error: msg})
+
       {:error, msg} ->
         conn |> put_status(500) |> json(%{error: msg})
     end
