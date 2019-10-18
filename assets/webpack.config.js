@@ -13,11 +13,13 @@ module.exports = (env, options) => ({
     ]
   },
   entry: {
-    "./js/app.js": glob.sync("./vendor/**/*.js").concat(["./js/app.js"])
+    "./js/index.js": glob.sync("./vendor/**/*.js").concat(["./js/index.js"])
   },
   output: {
-    filename: "app.js",
-    path: path.resolve(__dirname, "../priv/static/js")
+    publicPath: "/",
+    filename: "js/app.js",
+    chunkFilename: "js/[name].chunk.js",
+    path: path.resolve(__dirname, "../priv/static")
   },
   module: {
     rules: [
@@ -30,18 +32,37 @@ module.exports = (env, options) => ({
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"]
+        use: ["style-loader", "css-loader"]
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name].[hash:8].[ext]",
+              outputPath: "images"
+            }
+          }
+        ]
       }
     ]
   },
   resolve: {
+    modules: [
+      path.resolve(__dirname, "./js"),
+      path.resolve(__dirname, "./node_modules")
+    ],
     alias: {
       react: path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom")
     }
   },
   plugins: [
-    new MiniCssExtractPlugin({ filename: "../css/app.css" }),
+    new MiniCssExtractPlugin({
+      filename: "../css/app.css",
+      ignoreOrder: false
+    }),
     new CopyWebpackPlugin([{ from: "static/", to: "../" }])
   ]
 });

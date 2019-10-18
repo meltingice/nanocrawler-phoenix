@@ -102,8 +102,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
 
         case rpc_data do
           {:ok, %{"blocks" => accounts}} ->
-            # Since we're really only fetching 1 account, we can just grab the only entry in the Map.
-            all_blocks = accounts[Map.keys(accounts) |> hd]
+            all_blocks = get_all_blocks_from_accounts(accounts)
             blocks = format_pending_blocks(all_blocks)
 
             case NanoAPI.rpc("account_balance", %{account: account}) do
@@ -127,6 +126,14 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
     case data do
       {:ok, resp} -> json(conn, resp)
       {:error, msg} -> conn |> put_status(500) |> json(%{error: msg})
+    end
+  end
+
+  defp get_all_blocks_from_accounts(accounts) do
+    # Since we're really only fetching 1 account, we can just grab the only entry in the Map.
+    case accounts[Map.keys(accounts) |> hd] do
+      %{} = all_blocks -> all_blocks
+      _ -> %{}
     end
   end
 

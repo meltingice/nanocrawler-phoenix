@@ -1,23 +1,68 @@
-// We need to import the CSS so that webpack will load it.
-// The MiniCssExtractPlugin is used to separate it out into
-// its own CSS file.
-import css from "../css/app.css";
+import React from "react";
+import { IntlProvider } from "react-intl";
 
-// webpack automatically bundles all modules in your
-// entry points. Those entry points can be configured
-// in "webpack.config.js".
-//
-// Import dependencies
-//
-import "phoenix_html";
-import "react-phoenix";
+import config from "client-config.json";
+import { withTranslations } from "./lib/TranslationContext";
+import Navigation from "./app/Navigation";
+import Content from "./app/Content";
 
-// Import local files
-//
-// Local files can be imported directly using relative paths, for example:
-// import socket from "./socket"
+import AccountLink from "./app/partials/AccountLink";
 
-import App from "./app/index";
-window.Components = {
-  App
-};
+import "./App.css";
+
+function App({ locale }) {
+  return (
+    <IntlProvider locale={locale.language} messages={locale.messages}>
+      <div id="App" className="container-fluid p-0 h-100">
+        <div className="row Header align-items-center mr-0">
+          <div className="col">
+            <Navigation />
+          </div>
+        </div>
+
+        <Content />
+
+        <hr />
+
+        <div className="row mr-0 align-items-center">
+          <div className="col-md">
+            <div className="py-2 px-4">
+              <p className="mb-0">Created by Ryan LeFevre (@meltingice)</p>
+              <p>
+                Donations: <AccountLink account={config.donationAddress} />
+              </p>
+            </div>
+          </div>
+          <div className="col-auto text-md-right">
+            <div className="py-2 px-4">
+              <a
+                href="https://www.nanospeed.live/"
+                target="_blank"
+                className="btn btn-sm btn-nano-primary mb-1"
+              >
+                ⏰ Speed Test Nano
+              </a>
+              <br />
+              <a href="https://twitter.com/meltingice" target="_blank">
+                Twitter
+              </a>{" "}
+              &bull;{" "}
+              <a href="https://reddit.com/u/meltingice" target="_blank">
+                Reddit
+              </a>{" "}
+              &bull;{" "}
+              <a
+                href="https://github.com/meltingice/nano-node-dashboard"
+                target="_blank"
+              >
+                Source code
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </IntlProvider>
+  );
+}
+
+export default withTranslations(App);

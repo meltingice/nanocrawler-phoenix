@@ -13,12 +13,6 @@ defmodule NanocrawlerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", NanocrawlerWeb do
-    pipe_through :browser
-
-    get "/", HomeController, :index
-  end
-
   # Other scopes may use custom stacks.
   scope "/api", NanocrawlerWeb do
     pipe_through :api
@@ -40,5 +34,11 @@ defmodule NanocrawlerWeb.Router do
         get "/block_count", Api.V2.NodeController, :block_count
       end
     end
+  end
+
+  scope "/", NanocrawlerWeb do
+    pipe_through :browser
+
+    get "/*path", HomeController, :index
   end
 end
