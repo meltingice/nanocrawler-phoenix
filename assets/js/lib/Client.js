@@ -118,7 +118,9 @@ class Client {
   }
 
   async confirmationHistory(count = 2048) {
-    const resp = await this.fetch(`v2/confirmation/history?count=${count}`);
+    const resp = await this.fetch(
+      `v2/network/confirmation_history?count=${count}`
+    );
     return await resp.json();
   }
 
