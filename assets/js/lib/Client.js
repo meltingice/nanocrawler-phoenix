@@ -64,7 +64,7 @@ class Client {
     let url = `v2/accounts/${account}/history`;
     if (head) url += `?head=${head}`;
     const resp = await this.fetch(url);
-    return await resp.json();
+    return (await resp.json()).history;
   }
 
   async pendingTransactions(account) {

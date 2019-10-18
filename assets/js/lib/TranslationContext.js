@@ -48,7 +48,7 @@ class TranslationProvider extends React.Component {
       await import(`moment/locale/${langConfig.momentLocale}`);
     }
 
-    addLocaleData([...locale]);
+    addLocaleData(Object.values(locale));
     moment.locale(langConfig.momentLocale);
 
     this.setState({ language, messages }, () => {
