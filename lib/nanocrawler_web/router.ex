@@ -36,6 +36,7 @@ defmodule NanocrawlerWeb.Router do
 
       scope "/representatives" do
         get "/online", RepresentativesController, :online
+        get "/official", RepresentativesController, :official
       end
     end
   end

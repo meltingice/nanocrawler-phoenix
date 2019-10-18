@@ -30,5 +30,28 @@ defmodule NanocrawlerWeb.Api.V2.RepresentativesController do
   end
 
   def official(conn, _) do
+    rpc_data =
+      fetch("v2/representatives/official", 60, fn ->
+        case NanoAPI.rpc("representatives") do
+          {:ok, %{"representatives" => reps}} ->
+            Application.get_env(:nanocrawler, :network)[:official_representatives]
+            |> Enum.map(fn addr ->
+              {addr, reps[addr]}
+            end)
+            |> Enum.into(%{})
+            |> (&{:ok, &1}).()
+
+          {:error, _} = resp ->
+            resp
+        end
+      end)
+
+    case rpc_data do
+      {:ok, representatives} ->
+        json(conn, %{representatives: representatives})
+
+      {:error, msg} ->
+        conn |> put_status(500) |> json(%{error: msg})
+    end
   end
 end

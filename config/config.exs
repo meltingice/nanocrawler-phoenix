@@ -7,14 +7,28 @@
 # General application configuration
 use Mix.Config
 
+#
+# Start user configurable section
+#
+config :nanocrawler,
+  rpc: [host: "http://10.0.1.78:55000"],
+  network: [
+    official_representatives: [
+      "nano_1beta1ayfkpj1tfbhi3e9ihkocjkqi6ms5e4xrbmbybqnkza1e5jrake8wai",
+      "nano_1beta3kp4j9tn7pko3apyyzbrx789jpc98ep3ufqazanbcxiyyoxmxhjtbfn"
+    ]
+  ]
+
+#
+# End user configurable section
+#
+
 # Configures the endpoint
 config :nanocrawler, NanocrawlerWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "dAWUeayvOlOtbz8iJ4eO2VTIWAwCXqK/j3uTsTlNIdaGpGN5RtWS0L/8DvHPrmuW",
   render_errors: [view: NanocrawlerWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Nanocrawler.PubSub, adapter: Phoenix.PubSub.PG2]
-
-config :nanocrawler, nano: [rpc_host: "http://10.0.1.78:55000"]
 
 # Configures Elixir's Logger
 config :logger, :console,
