@@ -113,7 +113,7 @@ class Client {
   }
 
   async confirmationQuorum() {
-    const resp = await this.fetch("confirmation_quorum");
+    const resp = await this.fetch("v2/network/confirmation_quorum");
     return await resp.json();
   }
 

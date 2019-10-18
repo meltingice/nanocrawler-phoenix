@@ -52,6 +52,18 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
     end
   end
 
+  def confirmation_quorum(conn, _) do
+    rpc_data =
+      fetch("v2/network/confirmation_quorum", 10, fn ->
+        NanoAPI.rpc("confirmation_quorum")
+      end)
+
+    case rpc_data do
+      {:ok, data} -> json(conn, data)
+      {:error, msg} -> conn |> put_status(500) |> json(%{error: msg})
+    end
+  end
+
   def peers(conn, _) do
     rpc_data =
       fetch("v2/network/peers", 300, fn ->

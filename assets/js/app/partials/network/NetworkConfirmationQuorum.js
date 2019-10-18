@@ -2,6 +2,7 @@ import React from "react";
 import { FormattedNumber } from "react-intl";
 import { apiClient } from "lib/Client";
 import { TranslatedMessage } from "lib/TranslatedMessage";
+import Currency from "lib/Currency";
 import config from "client-config.json";
 
 export default class NetworkConfirmationQuorum extends React.Component {
@@ -21,8 +22,15 @@ export default class NetworkConfirmationQuorum extends React.Component {
   }
 
   async fetchData() {
-    const quorum = await apiClient.confirmationQuorum();
-    this.setState(quorum, () => {
+    const data = await apiClient.confirmationQuorum();
+    data.quorum_delta_mnano = Currency.fromRaw(data.quorum_delta);
+    data.online_weight_minimum_mnano = Currency.fromRaw(
+      data.online_weight_minimum
+    );
+    data.online_stake_total_mnano = Currency.fromRaw(data.online_stake_total);
+    data.peers_stake_total_mnano = Currency.fromRaw(data.peers_stake_total);
+
+    this.setState(data, () => {
       this.timer = setTimeout(this.fetchData.bind(this), 30000);
     });
   }
