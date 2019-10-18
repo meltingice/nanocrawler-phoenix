@@ -2,6 +2,7 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
   use NanocrawlerWeb, :controller
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache
+  import NanocrawlerWeb.Helpers.ResponseHelpers, only: [slice_response: 2]
 
   def active_difficulty(conn, _) do
     rpc_data =
@@ -12,6 +13,39 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
     case rpc_data do
       {:ok, data} ->
         json(conn, data)
+
+      {:error, msg} ->
+        conn |> put_status(500) |> json(%{error: msg})
+    end
+  end
+
+  def confirmation_history(conn, params) do
+    rpc_data =
+      fetch("v2/network/confirmation_history", 10, fn ->
+        case NanoAPI.rpc("confirmation_history") do
+          {:ok, %{"confirmations" => [_ | _]} = resp} ->
+            {:ok,
+             Map.put(
+               resp,
+               "confirmations",
+               Enum.sort(resp["confirmations"], fn a, b ->
+                 {time_a, _} = Integer.parse(a["time"])
+                 {time_b, _} = Integer.parse(b["time"])
+                 time_a >= time_b
+               end)
+             )}
+
+          {:error, msg} = resp ->
+            resp
+        end
+      end)
+
+    case rpc_data do
+      {:ok, data} ->
+        json(
+          conn,
+          Map.put(data, "confirmations", slice_response(data["confirmations"], params["count"]))
+        )
 
       {:error, msg} ->
         conn |> put_status(500) |> json(%{error: msg})

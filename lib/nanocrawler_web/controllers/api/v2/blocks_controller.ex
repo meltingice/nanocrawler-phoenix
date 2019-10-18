@@ -19,9 +19,7 @@ defmodule NanocrawlerWeb.Api.V2.BlocksController do
 
         case rpc_data do
           {:ok, %{"blocks" => %{^hash => block}}} ->
-            p_block = process_block(hash, block)
-            IO.puts(inspect(p_block))
-            {:ok, p_block}
+            {:ok, process_block(hash, block)}
 
           true ->
             rpc_data

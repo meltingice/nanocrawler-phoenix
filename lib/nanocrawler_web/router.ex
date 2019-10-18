@@ -32,6 +32,8 @@ defmodule NanocrawlerWeb.Router do
 
       scope "/network" do
         get "/active_difficulty", NetworkController, :active_difficulty
+        get "/confirmation_history", NetworkController, :confirmation_history
+        get "/confirmation_quorum", NetworkController, :confirmation_quorum
         get "/peers", NetworkController, :peers
       end
 
