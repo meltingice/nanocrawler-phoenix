@@ -11,17 +11,17 @@ class Client {
   }
 
   async ticker() {
-    const resp = await this.fetch("v2/ticker");
+    const resp = await this.fetch("v3/ticker");
     return await resp.json();
   }
 
   async account(account) {
-    const resp = await this.fetch(`v2/accounts/${account}`);
+    const resp = await this.fetch(`v3/accounts/${account}`);
     return (await resp.json()).account;
   }
 
   async weight(account) {
-    const resp = await this.fetch(`v2/accounts/${account}/weight`);
+    const resp = await this.fetch(`v3/accounts/${account}/weight`);
     return (await resp.json()).weight;
   }
 
@@ -36,12 +36,12 @@ class Client {
   }
 
   async networkTps(period) {
-    const resp = await this.fetch(`tps/${period}`);
+    const resp = await this.fetch(`v3/network/tps/${period}`);
     return (await resp.json()).tps;
   }
 
   async peers() {
-    const resp = await this.fetch("v2/network/peers");
+    const resp = await this.fetch("v3/network/peers");
     return (await resp.json()).peers;
   }
 
@@ -61,34 +61,34 @@ class Client {
   }
 
   async history(account, head = null) {
-    let url = `v2/accounts/${account}/history`;
+    let url = `v3/accounts/${account}/history`;
     if (head) url += `?head=${head}`;
     const resp = await this.fetch(url);
     return (await resp.json()).history;
   }
 
   async pendingTransactions(account) {
-    const resp = await this.fetch(`v2/accounts/${account}/pending`);
+    const resp = await this.fetch(`v3/accounts/${account}/pending`);
     return await resp.json();
   }
 
   async block(hash) {
-    const resp = await this.fetch(`v2/blocks/${hash}`);
+    const resp = await this.fetch(`v3/blocks/${hash}`);
     return (await resp.json()).block;
   }
 
   async delegators(account) {
-    const resp = await this.fetch(`v2/accounts/${account}/delegators`);
+    const resp = await this.fetch(`v3/accounts/${account}/delegators`);
     return (await resp.json()).delegators;
   }
 
   async representativesOnline() {
-    const resp = await this.fetch("v2/representatives/online");
+    const resp = await this.fetch("v3/representatives/online");
     return (await resp.json()).representatives;
   }
 
   async officialRepresentatives() {
-    const resp = await this.fetch("v2/representatives/official");
+    const resp = await this.fetch("v3/representatives/official");
     return (await resp.json()).representatives;
   }
 
@@ -98,7 +98,7 @@ class Client {
   }
 
   async activeDifficulty() {
-    const resp = await this.fetch("v2/network/active_difficulty");
+    const resp = await this.fetch("v3/network/active_difficulty");
     return await resp.json();
   }
 
@@ -113,20 +113,20 @@ class Client {
   }
 
   async confirmationQuorum() {
-    const resp = await this.fetch("v2/network/confirmation_quorum");
+    const resp = await this.fetch("v3/network/confirmation_quorum");
     return await resp.json();
   }
 
   async confirmationHistory(count = 2048) {
     const resp = await this.fetch(
-      `v2/network/confirmation_history?count=${count}`
+      `v3/network/confirmation_history?count=${count}`
     );
     return await resp.json();
   }
 
   async search(query) {
     if (query.trim().length < 2) return [];
-    const resp = await this.fetch(`v2/search?q=${query}`);
+    const resp = await this.fetch(`v3/search?q=${query}`);
     return (await resp.json()).accounts;
   }
 

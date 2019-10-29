@@ -1,4 +1,4 @@
-defmodule NanocrawlerWeb.Api.V2.NodeController do
+defmodule NanocrawlerWeb.Api.V3.NodeController do
   use NanocrawlerWeb, :controller
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache

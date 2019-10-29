@@ -1,4 +1,4 @@
-defmodule NanocrawlerWeb.Api.V2.BlocksController do
+defmodule NanocrawlerWeb.Api.V3.BlocksController do
   use NanocrawlerWeb, :controller
   alias NanocrawlerWeb.Helpers.CommonErrors
   alias Nanocrawler.NanoAPI
@@ -9,7 +9,7 @@ defmodule NanocrawlerWeb.Api.V2.BlocksController do
 
   def show(conn, %{"hash" => hash}) do
     block =
-      fetch("v2/block/#{hash}", 604_800, fn ->
+      fetch("v3/block/#{hash}", 604_800, fn ->
         rpc_data =
           NanoAPI.rpc("blocks_info", %{
             hashes: [hash],

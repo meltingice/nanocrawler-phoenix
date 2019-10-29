@@ -1,4 +1,4 @@
-defmodule NanocrawlerWeb.Api.V2.AccountsController do
+defmodule NanocrawlerWeb.Api.V3.AccountsController do
   use NanocrawlerWeb, :controller
   alias NanocrawlerWeb.Helpers.CommonErrors
   alias Nanocrawler.NanoAPI
@@ -9,7 +9,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
 
   def show(conn, %{"account" => account}) do
     rpc_data =
-      fetch("v2/account/#{account}", 10, fn ->
+      fetch("v3/account/#{account}", 10, fn ->
         NanoAPI.rpc("account_info", %{
           account: account,
           representative: true,
@@ -35,7 +35,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
 
   def weight(conn, %{"account" => account}) do
     rpc_data =
-      fetch("v2/account/#{account}/weight", 300, fn ->
+      fetch("v3/account/#{account}/weight", 300, fn ->
         NanoAPI.rpc("account_weight", %{account: account})
       end)
 
@@ -47,7 +47,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
 
   def delegators(conn, %{"account" => account}) do
     rpc_data =
-      fetch("v2/account/#{account}/delegators", 300, fn ->
+      fetch("v3/account/#{account}/delegators", 300, fn ->
         NanoAPI.rpc("delegators", %{account: account})
       end)
 
@@ -59,7 +59,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
 
   def history(conn, %{"account" => account} = params) do
     rpc_data =
-      fetch("v2/account/#{account}/history/#{params["head"] || ""}", 10, fn ->
+      fetch("v3/account/#{account}/history/#{params["head"] || ""}", 10, fn ->
         NanoAPI.rpc("account_history", %{
           account: account,
           count: 50,
@@ -90,7 +90,7 @@ defmodule NanocrawlerWeb.Api.V2.AccountsController do
 
   def pending(conn, %{"account" => account}) do
     data =
-      fetch("v2/account/#{account}/pending", 10, fn ->
+      fetch("v3/account/#{account}/pending", 10, fn ->
         rpc_data =
           NanoAPI.rpc("accounts_pending", %{
             accounts: [account],

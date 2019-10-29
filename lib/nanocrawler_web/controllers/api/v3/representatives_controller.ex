@@ -1,11 +1,11 @@
-defmodule NanocrawlerWeb.Api.V2.RepresentativesController do
+defmodule NanocrawlerWeb.Api.V3.RepresentativesController do
   use NanocrawlerWeb, :controller
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache
 
   def online(conn, _) do
     rpc_data =
-      fetch("v2/representatives/online", 300, fn ->
+      fetch("v3/representatives/online", 300, fn ->
         case NanoAPI.rpc("representatives_online", %{weight: true}) do
           {:ok, %{"representatives" => reps_online}} ->
             {:ok,
@@ -31,7 +31,7 @@ defmodule NanocrawlerWeb.Api.V2.RepresentativesController do
 
   def official(conn, _) do
     rpc_data =
-      fetch("v2/representatives/official", 60, fn ->
+      fetch("v3/representatives/official", 60, fn ->
         case NanoAPI.rpc("representatives") do
           {:ok, %{"representatives" => reps}} ->
             Application.get_env(:nanocrawler, :network)[:official_representatives]

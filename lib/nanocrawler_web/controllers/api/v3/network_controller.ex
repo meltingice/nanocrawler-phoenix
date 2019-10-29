@@ -1,4 +1,4 @@
-defmodule NanocrawlerWeb.Api.V2.NetworkController do
+defmodule NanocrawlerWeb.Api.V3.NetworkController do
   use NanocrawlerWeb, :controller
   alias Nanocrawler.NanoAPI
   import Nanocrawler.Cache
@@ -6,7 +6,7 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
 
   def active_difficulty(conn, _) do
     rpc_data =
-      fetch("v2/network/active_difficulty", 10, fn ->
+      fetch("v3/network/active_difficulty", 10, fn ->
         NanoAPI.rpc("active_difficulty", %{include_trend: true})
       end)
 
@@ -21,7 +21,7 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
 
   def confirmation_history(conn, params) do
     rpc_data =
-      fetch("v2/network/confirmation_history", 10, fn ->
+      fetch("v3/network/confirmation_history", 10, fn ->
         case NanoAPI.rpc("confirmation_history") do
           {:ok, %{"confirmations" => [_ | _]} = resp} ->
             {:ok,
@@ -35,7 +35,7 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
                end)
              )}
 
-          {:error, msg} = resp ->
+          {:error, _} = resp ->
             resp
         end
       end)
@@ -54,7 +54,7 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
 
   def confirmation_quorum(conn, _) do
     rpc_data =
-      fetch("v2/network/confirmation_quorum", 10, fn ->
+      fetch("v3/network/confirmation_quorum", 10, fn ->
         NanoAPI.rpc("confirmation_quorum")
       end)
 
@@ -66,7 +66,7 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
 
   def peers(conn, _) do
     rpc_data =
-      fetch("v2/network/peers", 300, fn ->
+      fetch("v3/network/peers", 300, fn ->
         {:ok, %{"peers" => quorum_peers}} =
           NanoAPI.rpc("confirmation_quorum", %{peer_details: true})
 
@@ -98,5 +98,18 @@ defmodule NanocrawlerWeb.Api.V2.NetworkController do
         type: peer["type"]
       }
     end)
+  end
+
+  def tps(conn, %{"period" => period}) do
+    case Nanocrawler.TpsCalculator.tps_for_period(period) do
+      {:ok, tps} ->
+        json(conn, %{tps: tps})
+
+      {:error, "No data yet"} ->
+        json(conn, %{tps: 0.0})
+
+      {:error, msg} ->
+        conn |> put_status(500) |> json(%{error: msg})
+    end
   end
 end

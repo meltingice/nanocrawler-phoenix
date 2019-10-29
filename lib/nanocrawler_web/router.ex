@@ -17,7 +17,7 @@ defmodule NanocrawlerWeb.Router do
   scope "/api", NanocrawlerWeb.Api do
     pipe_through :api
 
-    scope "/v2", V2 do
+    scope "/v3", V3 do
       scope "/accounts" do
         get "/:account", AccountsController, :show
         get "/:account/weight", AccountsController, :weight
@@ -35,6 +35,7 @@ defmodule NanocrawlerWeb.Router do
         get "/confirmation_history", NetworkController, :confirmation_history
         get "/confirmation_quorum", NetworkController, :confirmation_quorum
         get "/peers", NetworkController, :peers
+        get "/tps/:period", NetworkController, :tps
       end
 
       scope "/node" do
