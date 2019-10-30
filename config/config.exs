@@ -11,7 +11,7 @@ use Mix.Config
 # Start user configurable section
 #
 config :nanocrawler,
-  rpc: [host: "http://10.0.1.78:55000"],
+  rpc: %{type: :ipc, ipc_type: :tcp, ipc_url: "10.0.1.78:56000"},
   network: [
     official_representatives: [
       "nano_1beta1ayfkpj1tfbhi3e9ihkocjkqi6ms5e4xrbmbybqnkza1e5jrake8wai",
