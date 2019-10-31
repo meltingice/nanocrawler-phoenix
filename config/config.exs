@@ -10,6 +10,8 @@ use Mix.Config
 #
 # Start user configurable section
 #
+# rpc: %{type: :ipc, ipc_type: :tcp, url: "10.0.1.78:56000", min_worker_count: 10},
+# rpc: %{type: :http, url: "http://10.0.1.78:55000"},
 config :nanocrawler,
   rpc: %{type: :ipc, ipc_type: :tcp, url: "10.0.1.78:56000", min_worker_count: 10},
   network: [

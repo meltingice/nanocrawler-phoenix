@@ -25,6 +25,6 @@ defmodule Nanocrawler.RpcClient.HttpClient do
   end
 
   defp rpc_host do
-    to_charlist(Application.get_env(:nanocrawler, :rpc)[:host])
+    to_charlist(Application.get_env(:nanocrawler, :rpc)[:url])
   end
 end
