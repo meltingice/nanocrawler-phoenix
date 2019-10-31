@@ -53,7 +53,7 @@ defmodule Nanocrawler.Application do
   end
 
   defp ipc_max_workers do
-    Application.get_env(:nanocrawler, :rpc)[:max_worker_count] || ipc_min_workers
+    Application.get_env(:nanocrawler, :rpc)[:max_worker_count] || ipc_min_workers()
   end
 
   defp ipc_min_workers do

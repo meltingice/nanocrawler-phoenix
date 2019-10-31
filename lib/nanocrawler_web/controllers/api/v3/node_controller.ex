@@ -1,12 +1,12 @@
 defmodule NanocrawlerWeb.Api.V3.NodeController do
   use NanocrawlerWeb, :controller
-  alias Nanocrawler.NanoAPI
+  alias Nanocrawler.RpcClient
   import Nanocrawler.Cache
 
   def block_count(conn, _params) do
     rpc_data =
       fetch("block_count", 5, fn ->
-        NanoAPI.rpc("block_count")
+        RpcClient.call("block_count")
       end)
 
     case rpc_data do

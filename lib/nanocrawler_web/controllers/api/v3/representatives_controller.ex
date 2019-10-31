@@ -1,12 +1,12 @@
 defmodule NanocrawlerWeb.Api.V3.RepresentativesController do
   use NanocrawlerWeb, :controller
-  alias Nanocrawler.NanoAPI
+  alias Nanocrawler.RpcClient
   import Nanocrawler.Cache
 
   def online(conn, _) do
     rpc_data =
       fetch("v3/representatives/online", 300, fn ->
-        case NanoAPI.rpc("representatives_online", %{weight: true}) do
+        case RpcClient.call("representatives_online", %{weight: true}) do
           {:ok, %{"representatives" => reps_online}} ->
             {:ok,
              reps_online
@@ -32,7 +32,7 @@ defmodule NanocrawlerWeb.Api.V3.RepresentativesController do
   def official(conn, _) do
     rpc_data =
       fetch("v3/representatives/official", 60, fn ->
-        case NanoAPI.rpc("representatives") do
+        case RpcClient.call("representatives") do
           {:ok, %{"representatives" => reps}} ->
             Application.get_env(:nanocrawler, :network)[:official_representatives]
             |> Enum.map(fn addr ->

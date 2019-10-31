@@ -1,13 +1,13 @@
 defmodule NanocrawlerWeb.Api.V3.NetworkController do
   use NanocrawlerWeb, :controller
-  alias Nanocrawler.NanoAPI
+  alias Nanocrawler.RpcClient
   import Nanocrawler.Cache
   import NanocrawlerWeb.Helpers.ResponseHelpers, only: [slice_response: 2]
 
   def active_difficulty(conn, _) do
     rpc_data =
       fetch("v3/network/active_difficulty", 10, fn ->
-        NanoAPI.rpc("active_difficulty", %{include_trend: true})
+        RpcClient.call("active_difficulty", %{include_trend: true})
       end)
 
     case rpc_data do
@@ -22,7 +22,7 @@ defmodule NanocrawlerWeb.Api.V3.NetworkController do
   def confirmation_history(conn, params) do
     rpc_data =
       fetch("v3/network/confirmation_history", 10, fn ->
-        case NanoAPI.rpc("confirmation_history") do
+        case RpcClient.call("confirmation_history") do
           {:ok, %{"confirmations" => [_ | _]} = resp} ->
             {:ok,
              Map.put(
@@ -55,7 +55,7 @@ defmodule NanocrawlerWeb.Api.V3.NetworkController do
   def confirmation_quorum(conn, _) do
     rpc_data =
       fetch("v3/network/confirmation_quorum", 10, fn ->
-        NanoAPI.rpc("confirmation_quorum")
+        RpcClient.call("confirmation_quorum")
       end)
 
     case rpc_data do
@@ -68,9 +68,9 @@ defmodule NanocrawlerWeb.Api.V3.NetworkController do
     rpc_data =
       fetch("v3/network/peers", 300, fn ->
         {:ok, %{"peers" => quorum_peers}} =
-          NanoAPI.rpc("confirmation_quorum", %{peer_details: true})
+          RpcClient.call("confirmation_quorum", %{peer_details: true})
 
-        {:ok, %{"peers" => all_peers}} = NanoAPI.rpc("peers", %{peer_details: true})
+        {:ok, %{"peers" => all_peers}} = RpcClient.call("peers", %{peer_details: true})
 
         {:ok, combine_peers(quorum_peers, all_peers)}
       end)

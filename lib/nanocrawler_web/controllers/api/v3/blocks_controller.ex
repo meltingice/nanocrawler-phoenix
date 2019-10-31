@@ -1,7 +1,7 @@
 defmodule NanocrawlerWeb.Api.V3.BlocksController do
   use NanocrawlerWeb, :controller
   alias NanocrawlerWeb.Helpers.CommonErrors
-  alias Nanocrawler.NanoAPI
+  alias Nanocrawler.RpcClient
   import Nanocrawler.Cache
   import Nanocrawler.Util, only: [block_hash_is_valid?: 1, timestamp_for_block: 1]
 
@@ -11,7 +11,7 @@ defmodule NanocrawlerWeb.Api.V3.BlocksController do
     block =
       fetch("v3/block/#{hash}", 604_800, fn ->
         rpc_data =
-          NanoAPI.rpc("blocks_info", %{
+          RpcClient.call("blocks_info", %{
             hashes: [hash],
             pending: true,
             source: true

@@ -1,7 +1,7 @@
 defmodule NanocrawlerWeb.Api.V3.AccountsController do
   use NanocrawlerWeb, :controller
   alias NanocrawlerWeb.Helpers.CommonErrors
-  alias Nanocrawler.NanoAPI
+  alias Nanocrawler.RpcClient
   import Nanocrawler.Cache
   import Nanocrawler.Util, only: [account_is_valid?: 1, timestamp_for_block: 1]
 
@@ -10,7 +10,7 @@ defmodule NanocrawlerWeb.Api.V3.AccountsController do
   def show(conn, %{"account" => account}) do
     rpc_data =
       fetch("v3/account/#{account}", 10, fn ->
-        NanoAPI.rpc("account_info", %{
+        RpcClient.call("account_info", %{
           account: account,
           representative: true,
           weight: true,
@@ -36,7 +36,7 @@ defmodule NanocrawlerWeb.Api.V3.AccountsController do
   def weight(conn, %{"account" => account}) do
     rpc_data =
       fetch("v3/account/#{account}/weight", 300, fn ->
-        NanoAPI.rpc("account_weight", %{account: account})
+        RpcClient.call("account_weight", %{account: account})
       end)
 
     case rpc_data do
@@ -48,7 +48,7 @@ defmodule NanocrawlerWeb.Api.V3.AccountsController do
   def delegators(conn, %{"account" => account}) do
     rpc_data =
       fetch("v3/account/#{account}/delegators", 300, fn ->
-        NanoAPI.rpc("delegators", %{account: account})
+        RpcClient.call("delegators", %{account: account})
       end)
 
     case rpc_data do
@@ -60,7 +60,7 @@ defmodule NanocrawlerWeb.Api.V3.AccountsController do
   def history(conn, %{"account" => account} = params) do
     rpc_data =
       fetch("v3/account/#{account}/history/#{params["head"] || ""}", 10, fn ->
-        NanoAPI.rpc("account_history", %{
+        RpcClient.call("account_history", %{
           account: account,
           count: 50,
           raw: true,
@@ -92,7 +92,7 @@ defmodule NanocrawlerWeb.Api.V3.AccountsController do
     data =
       fetch("v3/account/#{account}/pending", 10, fn ->
         rpc_data =
-          NanoAPI.rpc("accounts_pending", %{
+          RpcClient.call("accounts_pending", %{
             accounts: [account],
             source: true,
             # 0.000001
@@ -105,7 +105,7 @@ defmodule NanocrawlerWeb.Api.V3.AccountsController do
             all_blocks = get_all_blocks_from_accounts(accounts)
             blocks = format_pending_blocks(all_blocks)
 
-            case NanoAPI.rpc("account_balance", %{account: account}) do
+            case RpcClient.call("account_balance", %{account: account}) do
               {:ok, %{"pending" => pending_balance}} ->
                 {:ok,
                  %{
