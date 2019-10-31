@@ -1,8 +1,9 @@
-defmodule Nanocrawler.IpcClient do
+defmodule Nanocrawler.RpcClient.Ipc do
   use GenServer
   @opts [:binary, active: false, reuseaddr: true]
   @timeout 30000
 
+  @impl true
   def init(%{ipc_type: :local, path: path} = state) do
     case :gen_tcp.connect({:local, path}, 0, @opts) do
       {:ok, socket} -> {:ok, %{state | socket: socket}}
@@ -10,6 +11,7 @@ defmodule Nanocrawler.IpcClient do
     end
   end
 
+  @impl true
   def init(%{ipc_type: :tcp, url: url} = state) do
     [host, port] = String.split(url, ":")
 
@@ -27,7 +29,7 @@ defmodule Nanocrawler.IpcClient do
     end
   end
 
-  def rpc(pid, request) do
+  def call(pid, request) do
     GenServer.call(pid, {:request, request})
   end
 
@@ -35,6 +37,7 @@ defmodule Nanocrawler.IpcClient do
     GenServer.start_link(__MODULE__, Map.merge(state, %{socket: nil}))
   end
 
+  @impl true
   def handle_call({:request, request}, _from, %{socket: socket} = state) do
     response =
       socket
@@ -74,7 +77,10 @@ defmodule Nanocrawler.IpcClient do
 
   defp process_result(result, socket) do
     if String.length(result[:data]) >= result[:length] do
-      {:ok, Jason.decode!(result[:data])}
+      case Jason.decode!(result[:data]) do
+        %{"error" => reason} -> {:error, reason}
+        data -> {:ok, data}
+      end
     else
       receive_response(:ok, socket, result)
     end

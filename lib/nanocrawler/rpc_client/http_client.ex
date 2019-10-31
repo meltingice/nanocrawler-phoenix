@@ -1,4 +1,7 @@
-defmodule Nanocrawler.NanoAPI do
+defmodule Nanocrawler.RpcClient.HttpClient do
+  use Nanocrawler.RpcClient.BaseClient
+
+  @impl true
   def rpc(action, options \\ %{}) do
     # Filter nil values
     options = options |> Enum.filter(fn {_, v} -> !is_nil(v) end) |> Enum.into(%{})
@@ -23,12 +26,5 @@ defmodule Nanocrawler.NanoAPI do
 
   defp rpc_host do
     to_charlist(Application.get_env(:nanocrawler, :rpc)[:host])
-  end
-
-  defp process_response(data) do
-    case data do
-      %{"error" => error} -> {:error, error}
-      _ -> {:ok, data}
-    end
   end
 end

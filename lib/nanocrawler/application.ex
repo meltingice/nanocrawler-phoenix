@@ -7,24 +7,27 @@ defmodule Nanocrawler.Application do
 
   def start(_type, _args) do
     # List all child processes to be supervised
-    children = [
+    [
       # Start the endpoint when the application starts
       NanocrawlerWeb.Endpoint,
       Nanocrawler.Redix
-      # Starts a worker by calling: Nanocrawler.Worker.start_link(arg)
-      # {Nanocrawler.Worker, arg},
     ]
+    |> load_rpc_adapter()
+    |> start_application()
+  end
 
+  defp load_rpc_adapter(children) do
+    # For now, only the IPC client is managed with a pool
     case rpc_type() do
       :ipc ->
-        children = children ++ [:poolboy.child_spec(:worker, poolboy_config(), ipc_options())]
+        children ++ [:poolboy.child_spec(:ipc_worker, poolboy_config(), ipc_options())]
 
-      :http ->
-        nil
+      _ ->
+        children
     end
+  end
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+  defp start_application(children) do
     opts = [strategy: :one_for_one, name: Nanocrawler.Supervisor]
     Supervisor.start_link(children, opts)
   end
@@ -43,14 +46,14 @@ defmodule Nanocrawler.Application do
   def poolboy_config do
     [
       {:name, {:local, :nano_ipc}},
-      {:worker_module, Nanocrawler.IpcServer},
+      {:worker_module, Nanocrawler.RpcClient.Ipc},
       {:size, ipc_max_workers()},
       {:max_overflow, ipc_min_workers()}
     ]
   end
 
   defp ipc_max_workers do
-    Application.get_env(:nanocrawler, :rpc)[:max_worker_count] || 5
+    Application.get_env(:nanocrawler, :rpc)[:max_worker_count] || ipc_min_workers
   end
 
   defp ipc_min_workers do
@@ -58,14 +61,6 @@ defmodule Nanocrawler.Application do
   end
 
   defp ipc_options do
-    rpc = Application.get_env(:nanocrawler, :rpc)
-
-    case rpc[:ipc_type] do
-      :local ->
-        [ipc_type: :local, path: rpc[:ipc_path]]
-
-      :tcp ->
-        [ipc_type: :tcp, url: rpc[:ipc_url]]
-    end
+    Application.get_env(:nanocrawler, :rpc)
   end
 end
