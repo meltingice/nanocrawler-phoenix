@@ -1,7 +1,7 @@
 defmodule Nanocrawler.RpcClient.Ipc do
   use GenServer
   @opts [:binary, active: false, reuseaddr: true]
-  @timeout 30000
+  @timeout 60_000
 
   @impl true
   def init(%{ipc_type: :local, path: path} = state) do
@@ -30,7 +30,7 @@ defmodule Nanocrawler.RpcClient.Ipc do
   end
 
   def call(pid, request) do
-    GenServer.call(pid, {:request, request})
+    GenServer.call(pid, {:request, request}, @timeout)
   end
 
   def start_link(state \\ %{}) do
@@ -76,7 +76,7 @@ defmodule Nanocrawler.RpcClient.Ipc do
   end
 
   defp process_result(result, socket) do
-    if String.length(result[:data]) >= result[:length] do
+    if byte_size(result[:data]) >= result[:length] do
       case Jason.decode!(result[:data]) do
         %{"error" => reason} -> {:error, reason}
         data -> {:ok, data}

@@ -16,7 +16,6 @@ export default class NodeStatus extends React.PureComponent {
 
     this.statTimer = null;
     this.state = {
-      account: "",
       blockCount: {},
       version: {},
       weight: 0,
@@ -28,8 +27,7 @@ export default class NodeStatus extends React.PureComponent {
   async componentWillMount() {
     this.setState(
       {
-        version: await apiClient.version(),
-        account: await apiClient.nodeAccount()
+        version: await apiClient.version()
       },
       () => this.updateStats()
     );
@@ -45,9 +43,9 @@ export default class NodeStatus extends React.PureComponent {
   async updateStats() {
     this.setState({
       blockCount: await apiClient.blockCount(),
-      weight: await apiClient.weight(this.state.account),
+      weight: await apiClient.weight(config.nodeAddress),
       systemInfo: await apiClient.systemInfo(),
-      peerCount: await apiClient.peerCount()
+      peerCount: (await apiClient.peers()).length
     });
 
     this.statTimer = setTimeout(this.updateStats.bind(this), 10000);
@@ -67,7 +65,7 @@ export default class NodeStatus extends React.PureComponent {
             </h1>
             <p className="text-muted break-word">
               <AccountLink
-                account={this.state.account}
+                account={config.nodeAddress}
                 className="text-muted"
               />
             </p>
@@ -196,11 +194,13 @@ export default class NodeStatus extends React.PureComponent {
     let size = systemInfo.dbSize / 1024.0 / 1024.0;
     return size > 1024 ? (
       <Fragment>
-        <FormattedNumber value={size / 1024} maximumFractionDigits={2} />GB
+        <FormattedNumber value={size / 1024} maximumFractionDigits={2} />
+        GB
       </Fragment>
     ) : (
       <Fragment>
-        <FormattedNumber value={size} maximumFractionDigits={2} />MB
+        <FormattedNumber value={size} maximumFractionDigits={2} />
+        MB
       </Fragment>
     );
   }

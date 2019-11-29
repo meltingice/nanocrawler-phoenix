@@ -1,6 +1,6 @@
 defmodule Nanocrawler.RpcClient.IpcClient do
   use Nanocrawler.RpcClient.BaseClient
-  @timeout 30_000
+  @timeout 60_000
 
   @impl true
   def rpc(action, options \\ %{}) do

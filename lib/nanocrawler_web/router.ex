@@ -40,6 +40,8 @@ defmodule NanocrawlerWeb.Router do
 
       scope "/node" do
         get "/block_count", NodeController, :block_count
+        get "/system_info", NodeController, :system_info
+        get "/version", NodeController, :version
       end
 
       scope "/representatives" do

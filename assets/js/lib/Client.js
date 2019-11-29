@@ -26,8 +26,8 @@ class Client {
   }
 
   async blockCount() {
-    const resp = await this.fetch("block_count");
-    return (await resp.json()).blockCount;
+    const resp = await this.fetch("v3/node/block_count");
+    return await resp.json();
   }
 
   async blockCountByType() {
@@ -51,12 +51,12 @@ class Client {
   }
 
   async version() {
-    const resp = await this.fetch("version");
+    const resp = await this.fetch("v3/node/version");
     return await resp.json();
   }
 
   async systemInfo() {
-    const resp = await this.fetch("system_info");
+    const resp = await this.fetch("v3/node/system_info");
     return await resp.json();
   }
 

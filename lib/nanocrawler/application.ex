@@ -28,6 +28,10 @@ defmodule Nanocrawler.Application do
   end
 
   defp start_application(children) do
+    # Required for node system information
+    :application.start(:sasl)
+    :application.start(:os_mon)
+
     opts = [strategy: :one_for_one, name: Nanocrawler.Supervisor]
     Supervisor.start_link(children, opts)
   end
