@@ -8,7 +8,7 @@
     "dependencies": {
         "@babel/polyfill": "^7.6.0",
         "@nivo/bar": "^0.49.1",
-        "async": "^2.6.0",
+        "async": "^2.6.4",
         "bignumber.js": "^8.0.1",
         "bootstrap": "^4.0.0",
         "history": "^4.7.2",
